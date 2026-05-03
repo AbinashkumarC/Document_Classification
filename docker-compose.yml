@@ -1,0 +1,121 @@
+# ================================================
+# DocScan AI — Docker Compose
+# Runs: Flask App + PostgreSQL database
+# ================================================
+# Usage:
+#   docker-compose up --build          → build and start
+#   docker-compose up -d               → start in background
+#   docker-compose down                → stop all containers
+#   docker-compose logs -f app         → follow app logs
+#   docker-compose logs -f db          → follow db logs
+# ================================================
+
+version: "3.9"
+
+services:
+
+  # --------------------------------------------------
+  # Flask Application — DocScan AI
+  # --------------------------------------------------
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: docscan_app
+    restart: unless-stopped
+    ports:
+      - "8000:8000"           # Access at http://localhost:8000
+    environment:
+      # --- App ---
+      KEYWORD_DIR: /app/keywords
+      UPLOAD_FOLDER: /tmp/pdf_uploads
+      DOCUMENT_DIR: /opt
+      STARTUP_DELAY: 0
+
+      # --- Database (points to the 'db' service below) ---
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: "${DB_NAME:-Document classification}"
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:-Bu190240}
+
+      # --- Email ---
+      SMTP_SERVER: ${SMTP_SERVER:-smtp.gmail.com}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SENDER_EMAIL: ${SENDER_EMAIL:-abinashkumarcabihealth@gmail.com}
+      SENDER_PASSWORD: ${SENDER_PASSWORD:-tmjz_tqza_nikj_lbam}
+
+    volumes:
+      # Mount keywords folder from host → container
+      # Edit your keywords JSON on host and it reflects immediately
+      - ./keywords:/app/keywords:ro
+
+      # Mount templates folder from host → container
+      # Edit index.html on host and it reflects immediately
+      - ./templates:/app/templates:ro
+
+      # Persistent upload temp folder
+      - pdf_uploads:/tmp/pdf_uploads
+
+      # Mount documents folder if classifying by server path via /classify endpoint
+      - ./documents:/opt:ro
+
+    depends_on:
+      db:
+        condition: service_healthy    # Wait until PostgreSQL is ready
+
+    networks:
+      - docscan_net
+
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+
+  # --------------------------------------------------
+  # PostgreSQL Database — Logs & Audit Trail
+  # --------------------------------------------------
+  db:
+    image: postgres:15-alpine
+    container_name: docscan_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: "${DB_NAME:-Document classification}"
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-Bu190240}
+    ports:
+      - "5432:5432"           # Expose so you can connect via pgAdmin or DBeaver
+    volumes:
+      # Persist database data across container restarts
+      - postgres_data:/var/lib/postgresql/data
+
+      # Auto-run SQL init scripts on first startup
+      - ./init_db:/docker-entrypoint-initdb.d:ro
+
+    networks:
+      - docscan_net
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d 'Document classification'"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+# --------------------------------------------------
+# Named Volumes
+# --------------------------------------------------
+volumes:
+  postgres_data:
+    driver: local
+  pdf_uploads:
+    driver: local
+
+# --------------------------------------------------
+# Network
+# --------------------------------------------------
+networks:
+  docscan_net:
+    driver: bridge

@@ -1,0 +1,1357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Next-Gen Document Intelligence Platform</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #050a12;
+      --surface: #0c1624;
+      --surface2: #111e30;
+      --accent: #00c8ff;
+      --accent2: #7b5cff;
+      --accent3: #00e5a0;
+      --warn: #ff6b6b;
+      --text: #e8f0fe;
+      --muted: #6a7fa8;
+      --border: rgba(0, 200, 255, 0.12);
+      --glow: 0 0 40px rgba(0, 200, 255, 0.15);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ---- GRID BG ---- */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,200,255,0.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,255,0.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 48px;
+      background: rgba(5, 10, 18, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-logo {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 1.4rem;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links a:hover { color: var(--accent); }
+
+    .nav-cta {
+      padding: 8px 20px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff !important;
+      font-weight: 600;
+      font-size: 0.85rem;
+    }
+
+    /* ---- HERO ---- */
+    .hero {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 100px 24px 60px;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(0,200,255,0.3);
+      background: rgba(0,200,255,0.05);
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 28px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent3);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.7); }
+    }
+
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(2.6rem, 6vw, 5rem);
+      line-height: 1.05;
+      letter-spacing: -0.04em;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 50%, var(--accent3) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero p {
+      max-width: 600px;
+      margin: 0 auto 48px;
+      color: var(--muted);
+      font-size: 1.1rem;
+      line-height: 1.7;
+      font-weight: 300;
+    }
+
+    /* ---- STATS ---- */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      flex-wrap: wrap;
+      margin-bottom: 72px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-top: 4px;
+    }
+
+    /* ---- UPLOAD CARD ---- */
+    .upload-section {
+      position: relative;
+      z-index: 1;
+      max-width: 780px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+
+    .upload-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 48px;
+      box-shadow: var(--glow), 0 24px 80px rgba(0,0,0,0.4);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .upload-card::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: -1px; right: -1px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+    }
+
+    .upload-area {
+      border: 2px dashed rgba(0,200,255,0.25);
+      border-radius: 14px;
+      padding: 52px 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      background: rgba(0,200,255,0.02);
+    }
+
+    .upload-area:hover, .upload-area.dragover {
+      border-color: var(--accent);
+      background: rgba(0,200,255,0.06);
+      transform: scale(1.005);
+    }
+
+    .upload-icon {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 20px;
+      background: linear-gradient(135deg, rgba(0,200,255,0.15), rgba(123,92,255,0.15));
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .upload-area h3 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 8px;
+    }
+
+    .upload-area p {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .upload-area .browse-link {
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    #fileInput { display: none; }
+
+    .selected-file {
+      display: none;
+      align-items: center;
+      gap: 14px;
+      margin-top: 20px;
+      padding: 14px 18px;
+      background: rgba(0,229,160,0.07);
+      border: 1px solid rgba(0,229,160,0.2);
+      border-radius: 10px;
+    }
+
+    .selected-file.show { display: flex; }
+
+    .file-icon {
+      width: 38px;
+      height: 38px;
+      background: linear-gradient(135deg, #ff6b6b, #ffa500);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .file-info { flex: 1; min-width: 0; }
+
+    .file-name {
+      font-weight: 500;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-size {
+      font-size: 0.78rem;
+      color: var(--muted);
+    }
+
+    .remove-file {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 18px;
+      transition: color 0.2s;
+    }
+
+    .remove-file:hover { color: var(--warn); }
+
+    .classify-btn {
+      width: 100%;
+      margin-top: 24px;
+      padding: 16px 32px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+      color: #fff;
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.03em;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .classify-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(0,200,255,0.3);
+    }
+
+    .classify-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .classify-btn .btn-text { position: relative; z-index: 1; }
+
+    /* ---- LOADING ---- */
+    .loading-overlay {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 32px;
+      text-align: center;
+    }
+
+    .loading-overlay.show { display: flex; }
+
+    .spinner {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      border: 3px solid rgba(0,200,255,0.1);
+      border-top-color: var(--accent);
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .progress-bar-wrap {
+      width: 100%;
+      max-width: 320px;
+      height: 4px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 999px;
+      animation: progress 20s ease-in-out forwards;
+    }
+
+    @keyframes progress { from { width: 0%; } to { width: 90%; } }
+
+    /* ---- RESULTS ---- */
+    .results-section {
+      display: none;
+      max-width: 780px;
+      margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+
+    .results-section.show { display: block; }
+
+    .results-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: var(--glow);
+      animation: fadeUp 0.5s ease;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .results-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 1.3rem;
+    }
+
+    .results-meta {
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
+    .doc-name {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 16px;
+      background: rgba(0,200,255,0.05);
+      border: 1px solid rgba(0,200,255,0.1);
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .doc-name-label { font-size: 0.8rem; color: var(--muted); }
+    .doc-name-val { font-weight: 500; font-size: 0.92rem; }
+
+    .page-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      background: rgba(123,92,255,0.1);
+      border: 1px solid rgba(123,92,255,0.2);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      color: var(--accent2);
+      margin-left: auto;
+    }
+
+    .classification-label {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .tags-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .doc-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 1px solid;
+      animation: tagIn 0.4s ease backwards;
+    }
+
+    .doc-tag.primary {
+      background: rgba(0,200,255,0.08);
+      border-color: rgba(0,200,255,0.25);
+      color: var(--accent);
+    }
+
+    .doc-tag.secondary {
+      background: rgba(123,92,255,0.08);
+      border-color: rgba(123,92,255,0.25);
+      color: var(--accent2);
+    }
+
+    .doc-tag.success {
+      background: rgba(0,229,160,0.08);
+      border-color: rgba(0,229,160,0.25);
+      color: var(--accent3);
+    }
+
+    .doc-tag.unknown {
+      background: rgba(255,107,107,0.08);
+      border-color: rgba(255,107,107,0.25);
+      color: var(--warn);
+    }
+
+    @keyframes tagIn {
+      from { opacity: 0; transform: scale(0.8); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .classify-again-btn {
+      margin-top: 28px;
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .classify-again-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* ---- ERROR ---- */
+    .error-box {
+      display: none;
+      padding: 18px 20px;
+      border-radius: 12px;
+      background: rgba(255,107,107,0.08);
+      border: 1px solid rgba(255,107,107,0.25);
+      color: var(--warn);
+      font-size: 0.9rem;
+      margin-top: 20px;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .error-box.show { display: flex; }
+
+    /* ---- HOW IT WORKS ---- */
+    .section {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 24px;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 12px;
+    }
+
+    .section-title {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+      line-height: 1.1;
+      letter-spacing: -0.03em;
+      margin-bottom: 20px;
+    }
+
+    .section-subtitle {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 560px;
+      line-height: 1.7;
+    }
+
+    .steps-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 52px;
+    }
+
+    .step-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .step-card::after {
+      content: '';
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transform: scaleX(0);
+      transition: transform 0.3s;
+    }
+
+    .step-card:hover { border-color: rgba(0,200,255,0.3); transform: translateY(-4px); box-shadow: var(--glow); }
+    .step-card:hover::after { transform: scaleX(1); }
+
+    .step-num {
+      font-family: 'Syne', sans-serif;
+      font-size: 2.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, rgba(0,200,255,0.15), rgba(123,92,255,0.15));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 16px;
+    }
+
+    .step-card h4 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .step-card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* ---- USE CASES ---- */
+    .use-cases {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .use-cases-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      margin-top: 52px;
+    }
+
+    @media (max-width: 720px) {
+      .use-cases-grid { grid-template-columns: 1fr; }
+    }
+
+    .use-case-card {
+      border-radius: 16px;
+      padding: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .use-case-card.insurance {
+      background: linear-gradient(135deg, rgba(0,200,255,0.06), rgba(0,200,255,0.02));
+      border: 1px solid rgba(0,200,255,0.15);
+    }
+
+    .use-case-card.hospital {
+      background: linear-gradient(135deg, rgba(0,229,160,0.06), rgba(0,229,160,0.02));
+      border: 1px solid rgba(0,229,160,0.15);
+    }
+
+    .use-case-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      margin-bottom: 20px;
+    }
+
+    .insurance .use-case-icon { background: rgba(0,200,255,0.1); }
+    .hospital .use-case-icon { background: rgba(0,229,160,0.1); }
+
+    .use-case-card h3 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+
+    .use-case-card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.7;
+      margin-bottom: 20px;
+    }
+
+    .benefit-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .benefit-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+
+    .benefit-list li::before {
+      content: '→';
+      color: var(--accent3);
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    /* ---- DOC TYPES ---- */
+    .doc-types-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 40px;
+    }
+
+    .doc-type-pill {
+      padding: 10px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 0.8rem;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+
+    .doc-type-pill:hover {
+      border-color: rgba(0,200,255,0.3);
+      color: var(--text);
+    }
+
+    .doc-type-pill .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ---- CONTACT ---- */
+    .contact-section {
+      position: relative;
+      z-index: 1;
+    }
+
+    .contact-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 56px;
+      text-align: center;
+      max-width: 800px;
+      margin: 0 auto;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      top: -80px; left: 50%;
+      transform: translateX(-50%);
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(123,92,255,0.15), transparent 70%);
+      pointer-events: none;
+    }
+
+    .contact-card h2 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: 2rem;
+      margin-bottom: 14px;
+    }
+
+    .contact-card > p {
+      color: var(--muted);
+      font-size: 1rem;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+
+    .contact-info {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      justify-content: center;
+      margin-bottom: 40px;
+    }
+
+    .contact-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 22px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--text);
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.25s;
+    }
+
+    .contact-link:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,200,255,0.15);
+    }
+
+    .contact-link .icon { font-size: 16px; }
+
+    .cta-banner {
+      background: linear-gradient(135deg, rgba(0,200,255,0.1), rgba(123,92,255,0.1));
+      border: 1px solid rgba(0,200,255,0.2);
+      border-radius: 14px;
+      padding: 24px 32px;
+    }
+
+    .cta-banner p {
+      color: var(--text);
+      font-size: 1rem;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .cta-banner span {
+      color: var(--accent);
+    }
+
+    .cta-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .cta-link {
+      padding: 10px 22px;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: all 0.25s;
+    }
+
+    .cta-link.primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #fff;
+    }
+
+    .cta-link.primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,200,255,0.3);
+    }
+
+    .cta-link.outline {
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .cta-link.outline:hover {
+      border-color: var(--accent3);
+      color: var(--accent3);
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 40px 24px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    footer strong { color: var(--accent); }
+
+    /* ---- SEPARATOR ---- */
+    .sep {
+      max-width: 1100px;
+      margin: 0 auto;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border), transparent);
+    }
+
+    @media (max-width: 640px) {
+      nav { padding: 14px 20px; }
+      .nav-links { display: none; }
+      .upload-card { padding: 28px 20px; }
+      .contact-card { padding: 32px 20px; }
+      .stats { gap: 24px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">DocScan AI</div>
+  <ul class="nav-links">
+    <li><a href="#classify">Classify</a></li>
+    <li><a href="#how-it-works">How It Works</a></li>
+    <li><a href="#use-cases">Use Cases</a></li>
+    <li><a href="#contact" class="nav-cta">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-badge">AI-Powered · OCR + · Real-Time</div>
+  <h1>Intelligent Medical<br /><span>Document Classifier</span></h1>
+  <p>Upload any medical or insurance PDF and get instant, AI-driven classification across 40+ document types — from discharge summaries to KYC forms.</p>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num">40+</div>
+    <div class="stat-label">Document Types</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">90%+</div>
+    <div class="stat-label">Fuzzy Match Accuracy</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">&lt;60s</div>
+    <div class="stat-label">Processing Time</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num">OCR</div>
+    <div class="stat-label">Scanned PDF Support</div>
+  </div>
+</div>
+
+<!-- UPLOAD SECTION -->
+<section class="upload-section" id="classify">
+  <div class="upload-card">
+    <div class="upload-area" id="uploadArea">
+      <input type="file" id="fileInput" accept=".pdf" />
+      <div class="upload-icon">📄</div>
+      <h3>Drop your PDF here</h3>
+      <p>or <span class="browse-link" onclick="document.getElementById('fileInput').click()">browse to upload</span></p>
+      <p style="margin-top:10px;font-size:0.78rem;color:var(--muted);">Supported: PDF files only · Max 50MB</p>
+    </div>
+
+    <div class="selected-file" id="selectedFile">
+      <div class="file-icon">📕</div>
+      <div class="file-info">
+        <div class="file-name" id="fileName">document.pdf</div>
+        <div class="file-size" id="fileSize">—</div>
+      </div>
+      <button class="remove-file" onclick="clearFile()" title="Remove">✕</button>
+    </div>
+
+    <div class="error-box" id="errorBox">
+      <span>⚠️</span>
+      <span id="errorMsg">Something went wrong.</span>
+    </div>
+
+    <div class="loading-overlay" id="loadingOverlay">
+      <div class="spinner"></div>
+      <div class="loading-text">Running OCR & classification…<br/><span style="font-size:0.78rem;opacity:0.6">This may take up to 60 seconds for large files</span></div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar" id="progressBar"></div>
+      </div>
+    </div>
+
+    <button class="classify-btn" id="classifyBtn" onclick="classify()" disabled>
+      <span class="btn-text">🔍 &nbsp;Classify Document</span>
+    </button>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<div class="results-section" id="resultsSection">
+  <div class="results-card">
+    <div class="results-header">
+      <div class="results-title">Classification Results</div>
+      <div class="results-meta" id="processedAt">—</div>
+    </div>
+
+    <div class="doc-name" id="docNameRow">
+      <span class="file-icon" style="width:30px;height:30px;font-size:13px;">📕</span>
+      <div>
+        <div class="doc-name-label">File</div>
+        <div class="doc-name-val" id="resultDocName">—</div>
+      </div>
+      <div class="page-count" id="pageCount">📃 — pages</div>
+    </div>
+
+    <div class="classification-label">Identified Document Types</div>
+    <div class="tags-grid" id="tagsGrid"></div>
+
+    <button class="classify-again-btn" onclick="reset()">↩ Classify another document</button>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+  <div class="section-label">Under the Hood</div>
+  <div class="section-title">How Classification Works</div>
+  <p class="section-subtitle">A multi-stage pipeline transforms your raw PDF into structured document labels in seconds.</p>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-num">01</div>
+      <h4>PDF Upload</h4>
+      <p>The PDF is securely uploaded and saved temporarily on the server for processing.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">02</div>
+      <h4>OCR Extraction</h4>
+      <p>Tesseract OCR converts each page image (200 DPI) to machine-readable text, even for scanned documents.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">03</div>
+      <h4>Smart Sampling</h4>
+      <p>For multi-page files, the top 25% of the first 6 pages and last page are extracted to reduce processing time.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">04</div>
+      <h4>Fuzzy Keyword Match</h4>
+      <p>RapidFuzz partial-ratio matching (≥90% threshold) identifies document types — even with OCR noise.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">05</div>
+      <h4>Regex Rules</h4>
+      <p>Aadhaar number patterns, PAN card patterns, and implant sticker heuristics run in parallel.</p>
+    </div>
+    <div class="step-card">
+      <div class="step-num">06</div>
+      <h4>Result + Logging</h4>
+      <p>Classifications are returned instantly and logged to PostgreSQL for auditing and analytics.</p>
+    </div>
+  </div>
+</section>
+
+<div class="sep"></div>
+
+<!-- USE CASES -->
+<section class="use-cases" id="use-cases">
+  <div class="section">
+    <div class="section-label">Real-World Impact</div>
+    <div class="section-title">Who Benefits &amp; How</div>
+    <p class="section-subtitle">DocScan AI bridges the gap between paper-heavy healthcare operations and digital efficiency.</p>
+
+    <div class="use-cases-grid">
+      <div class="use-case-card insurance">
+        <div class="use-case-icon">🛡️</div>
+        <h3>Insurance Industry</h3>
+        <p>Health insurance companies process thousands of claim documents daily. Manually sorting discharge summaries, KYC forms, pre-auth requests, and bills is time-consuming and error-prone. DocScan AI automates this entirely.</p>
+        <ul class="benefit-list">
+          <li>Auto-sort incoming claim document bundles in milliseconds</li>
+          <li>Flag missing mandatory documents (Discharge Summary, Pre-Auth, Bill) before claim adjudication</li>
+          <li>Detect fraudulent or duplicate Aadhaar / PAN submissions</li>
+          <li>Accelerate cashless claim turnaround from hours to minutes</li>
+          <li>Generate audit trails for IRDAI compliance requirements</li>
+          <li>Reduce claim rejection rates caused by misclassified documents</li>
+          <li>Integrate with TPA (Third Party Administrator) workflows for real-time routing</li>
+        </ul>
+      </div>
+
+      <div class="use-case-card hospital">
+        <div class="use-case-icon">🏥</div>
+        <h3>Hospital &amp; Healthcare</h3>
+        <p>Hospitals generate enormous amounts of paperwork per patient admission — prescriptions, lab reports, OT notes, consent forms, radiology reports. Organizing these for discharge or insurance submission is a major bottleneck.</p>
+        <ul class="benefit-list">
+          <li>Automatically build patient digital record by classifying uploaded scans</li>
+          <li>Ensure all mandatory discharge documents are present before patient release</li>
+          <li>Separate billing documents (Pharmacy, OT, Room, Ambulance) for accurate invoicing</li>
+          <li>Speed up insurance pre-authorization by identifying required docs instantly</li>
+          <li>Support NABH-accreditation-ready documentation workflows</li>
+          <li>Help medical records department manage legacy paper archives digitally</li>
+          <li>Reduce patient waiting time at billing and discharge counters</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DOC TYPES -->
+<section class="section">
+  <div class="section-label">Coverage</div>
+  <div class="section-title">Supported Document Types</div>
+  <p class="section-subtitle">The classifier recognizes 40+ distinct document categories across medical and general domains.</p>
+
+  <div class="doc-types-grid">
+    <!-- Medical / Insurance -->
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent)"></span>Pre-Auth Request Form</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent)"></span>Discharge Summary</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent)"></span>Final Bill / Tax Invoice</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent)"></span>Final Approval Letter</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent)"></span>Claim Form Part-B</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent)"></span>Policy Copy</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent)"></span>Cover Letter</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent)"></span>Member ID Card</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent)"></span>PPN Declaration</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent)"></span>cKYC Form with Photo</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>Histopathology Report</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>Investigation / Lab Report</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>Radiology Report</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>Blood Test Report</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>OT Notes</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>Consent Form</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>Prescription</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>Nursing Notes</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>Pharmacy Bill</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>Ambulance Bill</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>Ophthalmology Report</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>Fitness Certificate</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>Implant Stickers</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent2)"></span>TPA Letter</div>
+    <!-- ID / Legal -->
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent3)"></span>Aadhaar Card</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent3)"></span>PAN Card</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent3)"></span>Passport</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent3)"></span>Voter ID Card</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent3)"></span>Driving License</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent3)"></span>Ration Card</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent3)"></span>Birth Certificate</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent3)"></span>Death Certificate</div>
+    <div class="doc-type-pill"><span class="dot" style="background:var(--accent3)"></span>Marriage Certificate</div>
+    <!-- Financial -->
+    <div class="doc-type-pill"><span class="dot" style="background:#ffa500"></span>Bank Statement</div>
+    <div class="doc-type-pill"><span class="dot" style="background:#ffa500"></span>Salary Slip</div>
+    <div class="doc-type-pill"><span class="dot" style="background:#ffa500"></span>Income Tax Return</div>
+    <div class="doc-type-pill"><span class="dot" style="background:#ffa500"></span>Cancelled Cheque</div>
+    <div class="doc-type-pill"><span class="dot" style="background:#ffa500"></span>NEFT / Payment Receipt</div>
+    <div class="doc-type-pill"><span class="dot" style="background:#ffa500"></span>Employer / HR Letter</div>
+    <div class="doc-type-pill"><span class="dot" style="background:#ffa500"></span>Pre-Existing Disease Declaration</div>
+    <div class="doc-type-pill"><span class="dot" style="background:#ffa500"></span>Medical Device Certificate</div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="section contact-section" id="contact">
+  <div class="contact-card">
+    <h2>Build Something <span style="background:linear-gradient(135deg,var(--accent),var(--accent2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">Smarter</span></h2>
+    <p>Need a custom AI agent, automation pipeline, or document intelligence solution? Let's connect and build it together.</p>
+
+    <div class="contact-info">
+      <a href="mailto:abinashkumarc752@gmail.com" class="contact-link">
+        <span class="icon">✉️</span> abinashkumarc752@gmail.com
+      </a>
+      <a href="tel:+918072499068" class="contact-link">
+        <span class="icon">📱</span> +91 80724 99068
+      </a>
+      <a href="https://wa.me/918072499068" target="_blank" class="contact-link">
+        <span class="icon">💬</span> WhatsApp
+      </a>
+      <a href="https://www.linkedin.com/in/abinashkumar-c-b7222b251/" target="_blank" class="contact-link">
+        <span class="icon">🔗</span> LinkedIn
+      </a>
+      <a href="https://github.com/AbinashkumarC" target="_blank" class="contact-link">
+        <span class="icon">🐙</span> GitHub
+      </a>
+      <a href="https://chimerical-sunshine-442277.netlify.app/" target="_blank" class="contact-link">
+        <span class="icon">🌐</span> Portfolio
+      </a>
+    </div>
+
+    <div class="cta-banner">
+      <p>👋 Hi, I'm <span>Abinashkumar C</span> — AI/ML Engineer specializing in automation, intelligent document processing, and AI agents. If you need a custom solution for your business, reach out!</p>
+      <div class="cta-links">
+        <a href="mailto:abinashkumarc752@gmail.com" class="cta-link primary">📧 Hire Me</a>
+        <a href="https://www.linkedin.com/in/abinashkumar-c-b7222b251/" target="_blank" class="cta-link outline">View LinkedIn Profile</a>
+        <a href="https://chimerical-sunshine-442277.netlify.app/" target="_blank" class="cta-link outline">Visit Portfolio</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  Built with ❤️ by <strong>Abinashkumar C</strong> &nbsp;|&nbsp; DocScan AI — Medical Document Classification Engine &nbsp;|&nbsp; 2025
+</footer>
+
+<script>
+  let selectedFile = null;
+
+  // Drag and drop
+  const uploadArea = document.getElementById('uploadArea');
+
+  uploadArea.addEventListener('dragover', e => {
+    e.preventDefault();
+    uploadArea.classList.add('dragover');
+  });
+
+  uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+
+  uploadArea.addEventListener('drop', e => {
+    e.preventDefault();
+    uploadArea.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type === 'application/pdf') {
+      setFile(file);
+    } else {
+      showError('Only PDF files are supported.');
+    }
+  });
+
+  uploadArea.addEventListener('click', () => document.getElementById('fileInput').click());
+
+  document.getElementById('fileInput').addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (file) setFile(file);
+  });
+
+  function setFile(file) {
+    selectedFile = file;
+    document.getElementById('fileName').textContent = file.name;
+    document.getElementById('fileSize').textContent = formatBytes(file.size);
+    document.getElementById('selectedFile').classList.add('show');
+    document.getElementById('classifyBtn').disabled = false;
+    hideError();
+  }
+
+  function clearFile() {
+    selectedFile = null;
+    document.getElementById('fileInput').value = '';
+    document.getElementById('selectedFile').classList.remove('show');
+    document.getElementById('classifyBtn').disabled = true;
+    hideError();
+  }
+
+  function formatBytes(bytes) {
+    if (bytes < 1024) return bytes + ' B';
+    if (bytes < 1048576) return (bytes / 1024).toFixed(1) + ' KB';
+    return (bytes / 1048576).toFixed(1) + ' MB';
+  }
+
+  function showError(msg) {
+    document.getElementById('errorMsg').textContent = msg;
+    document.getElementById('errorBox').classList.add('show');
+  }
+
+  function hideError() {
+    document.getElementById('errorBox').classList.remove('show');
+  }
+
+  async function classify() {
+    if (!selectedFile) return;
+
+    hideError();
+    document.getElementById('loadingOverlay').classList.add('show');
+    document.getElementById('classifyBtn').disabled = true;
+    document.getElementById('resultsSection').classList.remove('show');
+
+    // Reset progress bar
+    const pb = document.getElementById('progressBar');
+    pb.style.animation = 'none';
+    pb.offsetHeight;
+    pb.style.animation = '';
+
+    const formData = new FormData();
+    formData.append('file', selectedFile);
+
+    try {
+      // Relative path — works because this page is served by the same Flask server
+      const response = await fetch('/upload_classify', {
+        method: 'POST',
+        body: formData
+      });
+
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        throw new Error(err.error || `Server error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      showResults(data);
+
+    } catch (err) {
+      showError(err.message || 'Classification failed. Make sure the Flask server is running.');
+    } finally {
+      document.getElementById('loadingOverlay').classList.remove('show');
+      document.getElementById('classifyBtn').disabled = false;
+    }
+  }
+
+  const TAG_COLORS = ['primary', 'secondary', 'success'];
+
+  function showResults(data) {
+    document.getElementById('resultDocName').textContent = data.documentName || '—';
+    document.getElementById('pageCount').textContent = `📃 ${data.totalPages || '?'} pages`;
+    document.getElementById('processedAt').textContent = data.processedAt || '';
+
+    const grid = document.getElementById('tagsGrid');
+    grid.innerHTML = '';
+
+    const classifications = data.classification || ['Unknown Document'];
+    classifications.forEach((cls, i) => {
+      const tag = document.createElement('div');
+      const colorClass = cls === 'Unknown Document' ? 'unknown' : TAG_COLORS[i % TAG_COLORS.length];
+      tag.className = `doc-tag ${colorClass}`;
+      tag.style.animationDelay = `${i * 0.08}s`;
+      tag.innerHTML = `<span>${getDocIcon(cls)}</span>${cls}`;
+      grid.appendChild(tag);
+    });
+
+    document.getElementById('resultsSection').classList.add('show');
+    document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }
+
+  function getDocIcon(docType) {
+    const t = docType.toLowerCase();
+    if (t.includes('aadhaar') || t.includes('aadhar')) return '🪪 ';
+    if (t.includes('pan')) return '💳 ';
+    if (t.includes('passport')) return '📘 ';
+    if (t.includes('discharge')) return '🏥 ';
+    if (t.includes('bill') || t.includes('invoice')) return '🧾 ';
+    if (t.includes('report') || t.includes('lab') || t.includes('radiology')) return '🔬 ';
+    if (t.includes('prescription')) return '💊 ';
+    if (t.includes('consent')) return '✍️ ';
+    if (t.includes('bank') || t.includes('cheque') || t.includes('payment')) return '🏦 ';
+    if (t.includes('salary') || t.includes('income')) return '💼 ';
+    if (t.includes('policy')) return '📋 ';
+    if (t.includes('approval') || t.includes('auth')) return '✅ ';
+    if (t.includes('unknown')) return '❓ ';
+    return '📄 ';
+  }
+
+  function reset() {
+    clearFile();
+    document.getElementById('resultsSection').classList.remove('show');
+    document.getElementById('classify').scrollIntoView({ behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>
